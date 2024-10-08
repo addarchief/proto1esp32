@@ -2,31 +2,193 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" >
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <title>ESP32-CAM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Control de Mascotas</title>
     <style>
-        /* Estilos simples para centrar el contenido */
-        #stream-container {
-            display: none; /* Oculto por defecto */
-        }
-        img {
-            max-width: 100%; /* Ajusta el tamaño de la imagen */
-        }
-        .nav-item:hover {
-        background-color: #fff;
-        transform: scale(1.2);
+    /* Estilos generales para el fondo y tipografía */
+    body {
+        background-color: #efefef; /* Gris muy claro como fondo */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #0a3143; /* Azul oscuro para el texto */
+        margin: 0;
+        padding: 0;
     }
-    .nav-item {
-        transition: .4s all;
+
+        /* Cabecera con fondo azul y texto blanco */
+        header {
+        background-color: #276e90; /* Azul fuerte */
+        color: white;
+        padding: 25px 0;
+        text-align: center;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+    /* Estilos de navegación con bordes suaves */
+    .nav-pills .nav-link {
+        background-color: transparent;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: 0.3s ease-in-out;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.2); /* Fondo blanco al pasar el mouse */
+        color: #fff;
+        transform: scale(1.05);
+    }
+
+    /* Estilos para inputs y selects */
+    .form-control, .form-select {
+        border-radius: 30px;
+        border: 2px solid #276e90; /* Borde azul */
+        background-color: #cecfc9; /* Beige claro */
+        padding: 12px 15px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0a3143; /* Azul oscuro cuando se enfoca */
+        box-shadow: 0 0 8px rgba(10, 49, 67, 0.5);
+        outline: none;
+    }
+
+    /* Botones de acción con azul y efectos hover */
+    .btn-primary {
+        background-color: #276e90; /* Azul fuerte */
+        color: white;
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 30px;
+        transition: 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .btn.primary1 {
+      background-color: #276e90;
+      color: white;
+    }
+    .btn-primary:hover {
+        background-color: #0a3143; /* Azul más oscuro */
+        transform: scale(1.05);
+    }
+
+    /* Tabla con bordes suaves y tonos naturales */
+    th {
+        background-color: #0a3143; /* Azul oscuro */
+        color: white;
+        font-weight: bold;
+        padding: 12px;
+        text-align: center;
+    }
+
+    td {
+        background-color: #fff;
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+        background-color: transparent; /* O puedes dejarlo sin propiedades */
+        transform: none;
+}
+
+    /* Modal de recomendaciones con bordes redondeados */
+    .modal-content {
+        border-radius: 15px;
+        padding: 20px;
+        background-color: #ffffff;
+    }
+
+    .modal-header {
+        background-color: #276e90; /* Azul fuerte */
+        color: white;
+        border-radius: 15px 15px 0 0;
+        padding: 15px;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #ddd;
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: #6c757d; /* Gris suave */
+        color: white;
+        border-radius: 25px;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .modal-footer .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    /* Control de cámara con botones en azul */
+    #toggle-stream {
+        background-color: #276e90; /* Azul fuerte */
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    #toggle-stream:hover {
+        background-color: #0a3143; /* Azul más oscuro */
+        transform: scale(1.05);
+    }
+
+    /* Imagen de la cámara con borde suave */
+    #stream-container img {
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        margin-top: 15px;
+    }
+
+    /* Estilos de la tabla responsive */
+    .table-responsive {
+        margin-top: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table {
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    /* Ajustes para el formulario */
+    .form-label {
+        color: #0a3143;
+        font-weight: bold;
+    }
+
+    /* Estilos de los botones y controles de cámara */
+    #toggle-stream {
+        font-size: 18px;
+    }
+
+    #stream-container {
+        margin-top: 20px;
     }
     </style>
 </head>
 <body>
 
-<header class="p-3 bg-primary">
+<!-- Header -->
+<header class="p-3">
   <div class="container">
     <header class="d-flex justify-content-center py-3 ">
       <ul class="nav nav-pills">
@@ -40,18 +202,20 @@
   </div>
 </header>
 
-<div class="container p-3">
-  <div class="col-md-7 col-lg-8">
-    <h4 class="mb-3">Información sobre mascotas</h4>
+
+<!-- Formulario de registro de mascotas -->
+<div class="container py-3">
+  <div class="col-md-8 mx-auto">
+    <h4 class="mb-4 text-center" style="color: #276e90;">Registro de Mascotas</h4>
     <form class="needs-validation" novalidate id="mascotaForm">
       <div class="row g-3">
-        <div class="col-sm-12 col-md-6">
+        <div class="col-md-6">
           <label for="nombre" class="form-label">Nombre</label>
           <input type="text" class="form-control" id="nombre" placeholder="Nombre" required>
           <div class="invalid-feedback">Nombre requerido.</div>
         </div>
 
-        <div class="col-sm-12 col-md-6">
+        <div class="col-md-6">
           <label for="especie" class="form-label">Especie</label>
           <select class="form-select" id="especie" required>
             <option value="">...</option>
@@ -61,13 +225,13 @@
           <div class="invalid-feedback">Por favor selecciona una opción.</div>
         </div>
 
-        <div class="col-sm-12 col-md-6">
+        <div class="col-md-6">
           <label for="raza" class="form-label">Raza</label>
           <input type="text" class="form-control" id="raza" placeholder="Raza" required>
           <div class="invalid-feedback">Raza requerida.</div>
         </div>
 
-        <div class="col-sm-12 col-md-6">
+        <div class="col-md-6">
           <label for="genero" class="form-label">Género</label>
           <select class="form-select" id="genero" required>
             <option value="">...</option>
@@ -77,46 +241,39 @@
           <div class="invalid-feedback">Por favor selecciona una opción.</div>
         </div>
 
-        <div class="col-sm-12 col-md-6">
+        <div class="col-md-6">
           <label for="edad" class="form-label">Edad</label>
           <select class="form-select" id="edad" required>
             <option value="">...</option>
-            <option value="menos">Menos de 1</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
+            <option>Menos de 1</option>
+            <option>1</option>
+            <option>2</option>
+            <!-- más opciones -->
           </select>
           <div class="invalid-feedback">Edad requerida.</div>
         </div>
 
-        <div class="col-sm-12 col-md-6">
+        <div class="col-md-6">
           <label for="peso" class="form-label">Peso</label>
           <select class="form-select" id="peso" required>
             <option value="">...</option>
             <option>1kg</option>
             <option>2kg</option>
+            <!-- más opciones -->
           </select>
           <div class="invalid-feedback">Peso requerido.</div>
         </div>
       </div>
-      <div class="py-3 col-sm-12 d-flex justify-content-center">
+      <div class="py-4 text-center">
         <input type="submit" value="REGISTRAR" class="btn btn-primary">
       </div>
     </form>
   </div>
 </div>
 
-
-<!-- Tabla para mostrar las mascotas -->
-<div class="table-responsive">
-  <table class="table table-striped mt-3">
+<!-- Tabla de mascotas -->
+<div class="container mt-5">
+  <table class="table table-hover table-bordered">
     <thead>
       <tr>
         <th>Nombre</th>
@@ -125,8 +282,8 @@
         <th>Género</th>
         <th>Edad</th>
         <th>Peso</th>
-        <th>Recomendacion</th>
-        <th>Accion</th>
+        <th>Recomendación</th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody id="mascotasTableBody">
@@ -135,7 +292,7 @@
   </table>
 </div>
 
-<!-- Modal de Bootstrap para mostrar recomendaciones -->
+<!-- Modal de recomendación -->
 <div class="modal fade" id="modalDieta" tabindex="-1" aria-labelledby="modalDietaLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -144,7 +301,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" id="dietaBody">
-        <!-- Aquí se mostrará la dieta recomendada -->
+        <!-- Dieta recomendada aquí -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -153,20 +310,15 @@
   </div>
 </div>
 
-<!-- Control de la camara -->
-<section class="py-5 text-center container">
-  <h1>Control de la Cámara ESP32-CAM</h1>
-    
-  <!-- Botón para iniciar el stream -->
-  <button class="btn btn-success" id="toggle-stream">Iniciar Stream</button>
-    
-  <!-- Contenedor para la imagen de la cámara -->
+<!-- Control de la cámara -->
+<section class="container text-center py-5">
+  <h4 class="" style="color: #276e90;">Control de la Cámara ESP32-CAM</h4>
+  <button id="toggle-stream" class="btn btn-lg">Iniciar Stream</button>
   <div id="stream-container">
-        <img id="stream" src="" alt="Cámara en vivo">
+    <img id="stream" src="" alt="Cámara en vivo">
   </div>
 </section>
-
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', function () {
             var baseHost = document.location.origin; // Obtiene la dirección base
             var streamUrl = baseHost + ':81'; // Establece la URL del stream
